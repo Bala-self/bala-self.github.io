@@ -1,0 +1,24 @@
+{
+  "name": "pocket-browser-qa",
+  "version": "1.0.0",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test:browser": "python tests/browser_check.py",
+    "audit:mobile": "lighthouse --chrome-flags=\"--headless --no-sandbox --disable-dev-shm-usage\" --output=json --output-path=artifacts/seo/lighthouse-local.json",
+    "test:seo": "python tests/seo_browser_check.py"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "Optional accessibility audit dependency",
+  "devDependencies": {
+    "@axe-core/playwright": "^4.13.0",
+    "lighthouse": "^13.5.0"
+  },
+  "private": true,
+  "engines": {
+    "node": ">=22.19.0"
+  }
+}

@@ -1,0 +1,9 @@
+.git
+.env
+node_modules
+artifacts
+tests
+__pycache__
+.pytest_cache
+.arena
+.pages-site

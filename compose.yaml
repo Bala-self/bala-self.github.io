@@ -1,0 +1,55 @@
+services:
+  app:
+    build: .
+    restart: unless-stopped
+    init: true
+    environment:
+      TRUST_PROXY_IPS: 172.29.87.3
+      PUBLIC_ORIGIN: https://${DOMAIN:?Set DOMAIN in .env}
+      SEO_INDEXING_ENABLED: ${SEO_INDEXING_ENABLED:-true}
+      GOOGLE_SITE_VERIFICATION: ${GOOGLE_SITE_VERIFICATION:-}
+      BING_SITE_VERIFICATION: ${BING_SITE_VERIFICATION:-}
+      CACHE_TTL: ${CACHE_TTL:-600}
+      ENABLE_BROWSER: ${ENABLE_BROWSER:-false}
+      DISABLE_YTDLP: ${DISABLE_YTDLP:-false}
+      DISABLE_HTML: ${DISABLE_HTML:-false}
+      DISABLE_BROWSER: ${DISABLE_BROWSER:-false}
+      MAX_MEDIA_BYTES: ${MAX_MEDIA_BYTES:-1073741824}
+      RESOLVER_CONCURRENCY: ${RESOLVER_CONCURRENCY:-3}
+      METRICS_TOKEN: ${METRICS_TOKEN:-}
+    networks:
+      internal:
+        ipv4_address: 172.29.87.2
+    expose: ["8000"]
+    read_only: true
+    tmpfs:
+      - /tmp:size=536870912,mode=1777
+    mem_limit: 1536m
+    pids_limit: 256
+    security_opt: ["no-new-privileges:true"]
+    cap_drop: ["ALL"]
+  web:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    environment:
+      DOMAIN: ${DOMAIN}
+    networks:
+      internal:
+        ipv4_address: 172.29.87.3
+    ports: ["80:80", "443:443", "443:443/udp"]
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      app:
+        condition: service_healthy
+volumes:
+  caddy_data:
+  caddy_config:
+
+networks:
+  internal:
+    ipam:
+      config:
+        - subnet: 172.29.87.0/24

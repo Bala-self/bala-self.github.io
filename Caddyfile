@@ -1,0 +1,9 @@
+{$DOMAIN} {
+    request_body {
+        max_size 8KB
+    }
+    # No access logs: download tokens and pasted links must not enter persistent logs.
+    reverse_proxy app:8000 {
+        flush_interval -1
+    }
+}

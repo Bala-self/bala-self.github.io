@@ -1,0 +1,29 @@
+# Free hobby backend only. GitHub Pages serves the indexable public website.
+# Manual setup is explained in FREE_LAUNCH_GUIDE.md; Blueprints are optional.
+services:
+  - type: web
+    name: pocket-downloader-api
+    runtime: docker
+    plan: free
+    dockerfilePath: ./Dockerfile.free
+    healthCheckPath: /api/health
+    autoDeployTrigger: commit
+    envVars:
+      - key: PUBLIC_ORIGIN
+        sync: false # Your actual https://USERNAME.github.io origin, without a trailing slash.
+      - key: SEO_INDEXING_ENABLED
+        value: "false" # The API is not the public searchable website.
+      - key: ENABLE_CROSS_ORIGIN
+        value: "true"
+      - key: ENABLE_BROWSER
+        value: "false"
+      - key: DISABLE_BROWSER
+        value: "true"
+      - key: RESOLVER_CONCURRENCY
+        value: "1"
+      - key: MAX_ACTIVE_DOWNLOADS
+        value: "2"
+      - key: MAX_MEDIA_BYTES
+        value: "104857600"
+      - key: METRICS_TOKEN
+        generateValue: true

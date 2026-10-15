@@ -1,0 +1,17 @@
+# Small, single-worker hobby/free-tier image. Public pages are hosted on GitHub Pages.
+FROM python:3.13-slim
+ENV PYTHONUNBUFFERED=1 PYTHONDONTWRITEBYTECODE=1 ENABLE_BROWSER=false DISABLE_BROWSER=true
+WORKDIR /app
+RUN apt-get update && apt-get install -y --no-install-recommends ffmpeg ca-certificates && rm -rf /var/lib/apt/lists/*
+COPY requirements.lock ./
+# Keep one set of dependency pins; omit tests and optional Chromium tooling in this image.
+RUN grep -vE '^(playwright|pytest|pytest-asyncio)' requirements.lock > /tmp/runtime-requirements.txt && pip install --no-cache-dir -r /tmp/runtime-requirements.txt
+RUN useradd --uid 10001 --create-home pocket
+COPY --chown=pocket:pocket app.py seo.py ./
+COPY --chown=pocket:pocket content ./content
+COPY --chown=pocket:pocket static ./static
+COPY --chown=pocket:pocket scripts/start_free.py ./start_free.py
+USER pocket
+EXPOSE 8000
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10s CMD python -c "import os,urllib.request; urllib.request.urlopen('http://127.0.0.1:'+os.getenv('PORT','8000')+'/api/health',timeout=3)"
+CMD ["python", "start_free.py"]

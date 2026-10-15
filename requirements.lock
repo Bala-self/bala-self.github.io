@@ -1,0 +1,9 @@
+# Validated direct dependency versions; update via the scheduled maintenance PR.
+fastapi==0.143.1
+uvicorn[standard]==0.54.0
+httpx==0.28.1
+beautifulsoup4==4.15.0
+yt-dlp==2026.8.19
+playwright==1.64.0
+pytest==9.0.3
+pytest-asyncio==1.4.0

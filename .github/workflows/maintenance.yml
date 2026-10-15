@@ -1,0 +1,46 @@
+name: Weekly engine maintenance
+on:
+  schedule:
+    - cron: '20 4 * * 1'
+  workflow_dispatch:
+permissions:
+  contents: write
+  pull-requests: write
+jobs:
+  engine-update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - run: pip install -r requirements.lock && pip install --upgrade yt-dlp
+      - name: Pin tested engine
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          from importlib.metadata import version
+          import re
+          p=Path('requirements.lock')
+          p.write_text(re.sub(r'yt-dlp==[^\n]+','yt-dlp=='+version('yt-dlp'),p.read_text()))
+          PY
+      - run: pytest -q
+      - uses: peter-evans/create-pull-request@v7
+        with:
+          branch: maintenance/yt-dlp
+          title: 'chore: update validated yt-dlp engine'
+          commit-message: 'chore: update yt-dlp'
+          body: 'Automated engine update. Review tests and run owned live fixtures before merging and redeploying. No untested production auto-install.'
+  live-health:
+    if: ${{ vars.POCKET_BASE_URL != '' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - run: python scripts/healthcheck.py
+        env:
+          BASE_URL: ${{ vars.POCKET_BASE_URL }}
+          TEST_URLS: ${{ secrets.POCKET_TEST_URLS }}
+          ALERT_WEBHOOK: ${{ secrets.POCKET_ALERT_WEBHOOK }}
