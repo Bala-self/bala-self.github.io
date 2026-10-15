@@ -21,9 +21,9 @@ STATIC = ROOT / 'static'
 PUBLIC_PATHS = ('/', '/privacy', '/terms')
 PAGES = {
     '/': {
-        'title': 'Free Instagram Downloader for Reels & Videos | Pocket',
-        'description': 'Save public Instagram Reels, videos and available photos with Pocket. Free, no account or added watermark. Paste a link to check what Instagram makes accessible.',
-        'name': 'Instagram media downloader',
+        'title': 'Free Instagram Video Downloader for Reels | Pocket',
+        'description': 'Pocket is a free Instagram video downloader for public videos and Reels you are authorized to save. No account or added watermark. Availability varies.',
+        'name': 'Instagram video downloader',
     },
     '/privacy': {
         'title': 'Privacy Policy — Links, Cache & Local History | Pocket',

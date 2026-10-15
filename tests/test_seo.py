@@ -190,8 +190,19 @@ def test_accurate_download_and_rights_disclosures(prod):
     privacy=BeautifulSoup(prod.get('/privacy').text,'html.parser').get_text(' ',strip=True)
     assert 'No added watermark' in home
     assert 'Files pass through this server' in home
-    assert 'does not remove marks already present' in home
+    assert 'marks already present in the source remain' in home
     assert 'or redistribute posts' not in home
     assert 'Instagram restricts automated access' in terms
     assert 'This technical design does not itself grant copyright permission' in terms
     assert 'about one hour' in privacy
+
+def test_home_matches_video_downloader_intent_without_overclaiming(prod):
+    s=BeautifulSoup(prod.get('/').text,'html.parser')
+    assert s.title.text=='Free Instagram Video Downloader for Reels | Pocket'
+    assert s.select_one('meta[name="description"]')['content']=='Pocket is a free Instagram video downloader for public videos and Reels you are authorized to save. No account or added watermark. Availability varies.'
+    assert s.select_one('.download-panel h2').get_text(' ',strip=True)=='INSTAGRAM VIDEO DOWNLOADER'
+    assert s.select_one('#how-title').text=='How to download an Instagram video'
+    assert s.select_one('#save-on-device')
+    assert 'browser controls where the file is saved' in s.select_one('#save-on-device p').text
+    assert 'If only Original is returned' in s.select_one('#download-quality p').text
+    assert len(s.select('.faq-section details'))==5
